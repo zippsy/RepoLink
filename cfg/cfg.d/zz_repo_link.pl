@@ -14,8 +14,6 @@ $c->{repo_link} = {
 		min_chars => 5,
 		remote_repos => $remote_repos,
 		lookup_script => "/users/lookup/repo_link",
-#		link_user => "repo_link",
-#		link_password => "5353730"
 };
 
 $c->add_dataset_field(
