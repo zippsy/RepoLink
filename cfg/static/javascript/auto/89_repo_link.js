@@ -86,7 +86,7 @@ function set_link(target, element, data){
 	var this_id = window.location.pathname.replace(/\//g,'');
 	    console.log(this_id);
 
-         var url = "/cgi/get_repo_links";
+       var url = "/cgi/get_repo_links";
 
        jQuery.ajax({
          url: url,
@@ -100,7 +100,14 @@ function set_link(target, element, data){
              //or
              //jQuery(".data_links_panel").hide();
            }else{
-           
+	    jQuery("div.repo_links").html('<h3>Related items (from other repositories)</h3><ul></ul>');
+
+	     jQuery(data.lookup_response.reverse()).each(function(key, item_data){
+			console.log(item_data.title);
+			//CRUD.pm problem with item_data.uri probably due to dodgy local host/port set up
+			var url = item_data.uri.replace("id/eprint/","");
+	       		jQuery("div.repo_links ul").append('<li><a href="'+url+'">'+item_data.title+'</a></li>'); 
+	     });
 	   }
          },//success
          complete: function(XHR, status) {
