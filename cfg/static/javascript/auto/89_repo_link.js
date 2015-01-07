@@ -127,8 +127,6 @@ function set_link(target, element, data){
   jQuery(document).ready(function(){  
     if(jQuery("div.data_links_panel").length > 0 ){
       var this_id = jQuery("div.data_links_panel").attr("id").replace("linktodata_from_","");
-//      url = "http://w01.ueldrtest.da.ulcc.ac.uk/cgi/export/eprint/ilink/834/JSON/anything"
-//     var url = "http://ueltest.da.ulcc.ac.uk/cgi/export_proxy";
      var url = "/cgi/export_proxy";
 
        jQuery.ajax({
