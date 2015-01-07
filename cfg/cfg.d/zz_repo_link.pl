@@ -1,30 +1,93 @@
-#Some parameers to use for our internal_link lookup
-#(it looks for repository items in the UEL roar IR)
+#Repository Link
+#EPrints Plugin to dynamically link items in different EPrints repositories
+#Rory McNicholl, ULCC, 2015
+
+#Repository link configuration file
+
+# How?
+
+# The Repository link plugin will allow depositors to search other enabled 
+# repositoies from the workflow and save links in the master repository to 
+# associated items in other repositories. Those other enabled repositories
+# (satellite repositories) will be able to check the master repository and
+# display reciprocal links to the master repository thus closing the loop
+# of association
+
+# The plugin/package is designed to be installed on both the master and
+# satellite repositories though it will work differently on each. 
+
+######################################################################################
+# To this end, you should set the master parameter below to 1 only on one repository #
+######################################################################################
+
+# So far only used with a single satellite, however with some work on the 
+# response handling in /users/lookup/repo_links this could potentially be deployed on 
+# multiple satellite repositories
+
 	
-my $remote_repos = [	
+my $remote_repos = [];
+
+$c->{repo_link} = {
+		#Is this master (or local) repository or a satellite (or remote) repository?
+		#The master repo will store the repository links
+		#The metadata structure of the satellite repository will be unchanged
+		master => 1, 		
+
+		#Once this config file file is loaded on the master repository
+		#You will need to update the database structure.. (or can I do that?)
+
+		#Minimum characters to trigger the lookup of satellite repository from workflow
+		min_chars => 5,
+		
+		#The hostname that will be used to contact master from satellite 
+		#master_repo_uri => "plug.ep.devorkin",
+		master_repo_host => '192.168.171.131',
+		#The port that will be used to contact the master from satellite
+		master_repo_port => 8081,
+		#The auto-complete script used to contact the satellite repositories from the workflow
+		#NB This and the workflow paste below could be potentially replaced by a direct ajax 
+		#call to a cross-domain enabled search_script on the satellite(s)
+		lookup_script => "/users/lookup/repo_link",
+
+		#The config for the satellite repositories (see below)
+		remote_repos => $remote_repos,
+
+};
+
+$remote_repos = [	
 	{
-		#repo_uri => 'test.ep.devorkin:8081',
-		repo_uri => '192.168.171.131:8080',
+		#repo_uri => 'test.ep.devorkin',
+		repo_uri => '192.168.171.131',
+		repo_port => 8080,
 		search_script => "/cgi/lookup/title_search"
 	},
 ];
+=comment
+###################################################################################################
+###### Much as we would love to do this all automatically, we can't so...
+###### In the MASTER repository - Add the following to cfg/workflow/eprint/default.xml
 
+<component>
+	<field ref="repo_link" input_lookup_url="{$config{rel_cgipath}}{$config{repo_link}{lookup_script}}" input_lookup_params="id={eprintid}"/>
+</component>
 
-$c->{repo_link} = {
-		master => 1, #denotes whether this is a satelite or master repo... 
-		master_repo_uri => "plug.ep.devorkin",
-		min_chars => 5,
-		remote_repos => $remote_repos,
-		lookup_script => "/users/lookup/repo_link",
-		#http://data.uel.ac.uk/cgi/search/archive/advanced/export_ueldr_JSON.js?screen=Search&dataset=archive&_action_export=1&output=JSON&exp=0%7C1%7C-date%2Fcreators_name%2Ftitle%7Carchive%7C-%7Cinternal_link_link%3Ainternal_link_link%3AALL%3AIN%3A[ENCODED_EPRINT_URI FROM_REMOTE]%7C-%7Ceprint_status%3Aeprint_status%3AANY%3AEQ%3Aarchive%7Cmetadata_visibility%3Ametadata_visibility%3AANY%3AEQ%3Ashow
-		# eg http%253A%2F%2Froar.uel.ac.uk%2Fid%2Feprint%2F3550
-};
+###### In the SATELLITE repository - Add the following to cfg/citation/eprint/summary_page.xml
 
-#TODO make sure that master has repo_link_link searchable
+<div class="repo_links"></div>
+
+###### Do this in the location you want the reciprocal links to the master repository to appear
+###################################################################################################
+=cut
+
+# Different calues required to get jquery inserted before auto.js depending on whether it is 
+# workflow (master) or summary_page (satellite)
 
 my $jquery_priority = 20;
+
 if($c->{repo_link}->{master}){
-$jquery_priority = 2000;
+	$jquery_priority = 2000;
+
+	# Add the repo_link compound field to master
 	$c->add_dataset_field(
 		"eprint",
 		{
@@ -48,19 +111,10 @@ $jquery_priority = 2000;
 		},
 		reuse => 1
 	);
+	# Add search field to master 
+	# (required to make the export of the repo_link_link search work... unless there is a less intrusive way)
+	push @{$c->{search}->{advanced}->{search_fields}}, {meta_fields=>["repo_link_link"]};
 }
-=comment
-# In the MASTER repository - Add the following to cfg/workflow/eprint/default.xml
-
-
-
-<component>
-	<field ref="repo_link" input_lookup_url="{$config{rel_cgipath}}{$config{repo_link}{lookup_script}}" input_lookup_params="id={eprintid}"/>
-</component>
-
-=cut
-#NB the is a proxy for running the remote search... *potentially* unneeded if the access-control-allow-origin apache directive is properly configured on remote repo.. though would need a javascript hook for the workflow
-
 
 #Insert jquery lib ahead of auto.js
 
