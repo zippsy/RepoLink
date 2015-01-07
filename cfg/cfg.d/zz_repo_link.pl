@@ -40,7 +40,6 @@ $c->{repo_link} = {
 		min_chars => 5,
 		
 		#The hostname that will be used to contact master from satellite 
-		#master_repo_uri => "plug.ep.devorkin",
 		master_repo_host => 'my.repository.ac.uk',
 		#The port that will be used to contact the master from satellite
 		#master_repo_port => 8081,

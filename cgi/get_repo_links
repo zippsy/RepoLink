@@ -46,12 +46,8 @@ else
         EPrints::abort "Requires numeric id argument";
 }
 
-#we can/will replace this call export with invented ilink param with this which is a search exported as JSON
-
-
-#my $dr_export = $data_config->{data_repo_uri}.$data_config->{data_repo_export}."/$id/JSON/".int(rand(1000000));
-#print STDERR $rl_conf->{master_repo_uri}."\n";
-my $export_req = $rl_conf->{master_repo_uri};
+#print STDERR $rl_conf->{master_repo_host}."\n";
+my $export_req = $rl_conf->{master_repo_host};
 #print STDERR "*".$rl_conf->{masster_repo_port}."*\n";
 $export_req .= ":".$rl_conf->{master_repo_port} if(defined $rl_conf->{master_repo_port} && $rl_conf->{master_repo_port}=~ /\d+/);
 
