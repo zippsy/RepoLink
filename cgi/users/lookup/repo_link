@@ -31,7 +31,18 @@ my $rl_conf = $repo->get_conf("repo_link");
 my $q = $repo->param( "q" ) || "";
 my $jsonp = $repo->param( "json" ) || $repo->param( "jsonp" ) || $repo->param( "callback" ) || "send_data";
 
-exit unless length( $q ) >= $rl_conf->{min_chars};
+unless (length( $q ) >= $rl_conf->{min_chars}) {
+	my $res_str = "{lookup_response: [] }";
+
+	if($jsonp){
+		$jsonp =~ s/[^=A-Za-z0-9_]//g;
+		$res_str = "$jsonp(\n".$res_str;
+		$res_str .= ");\n";
+	}
+	print $res_str;
+	exit;
+
+}
 
 my $id = $repo->param( "eprintid" );
 $id = $repo->param( "id" ) if !EPrints::Utils::is_set( $id );
@@ -53,7 +64,7 @@ else
 for my $remote_repo (@{$rl_conf->{remote_repos}}){
 
 	my $remote_request_string = $remote_repo->{repo_uri}.$remote_repo->{search_script}."?q=$q";
-#	print STDERR $remote_request_string."\n";
+	print STDERR $remote_request_string."\n";
 	if($remote_request_string !~ /^http:\/\//){
 		$remote_request_string = "http://".$remote_request_string;
 	}
