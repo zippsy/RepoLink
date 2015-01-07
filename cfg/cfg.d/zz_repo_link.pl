@@ -41,9 +41,10 @@ $c->{repo_link} = {
 		
 		#The hostname that will be used to contact master from satellite 
 		#master_repo_uri => "plug.ep.devorkin",
-		master_repo_host => '192.168.171.131',
+		master_repo_host => 'my.repository.ac.uk',
 		#The port that will be used to contact the master from satellite
-		master_repo_port => 8081,
+		#master_repo_port => 8081,
+		
 		#The auto-complete script used to contact the satellite repositories from the workflow
 		#NB This and the workflow paste below could be potentially replaced by a direct ajax 
 		#call to a cross-domain enabled search_script on the satellite(s)
@@ -56,9 +57,8 @@ $c->{repo_link} = {
 
 $remote_repos = [	
 	{
-		#repo_uri => 'test.ep.devorkin',
-		repo_uri => '192.168.171.131',
-		repo_port => 8080,
+		repo_uri => 'daves.repository.ac.uk',
+		#repo_port => 8080,
 		search_script => "/cgi/lookup/title_search"
 	},
 ];
