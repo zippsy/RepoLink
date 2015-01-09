@@ -25,13 +25,11 @@
 # multiple satellite repositories
 
 	
-my $remote_repos = [];
-
 $c->{repo_link} = {
 		#Is this master (or local) repository or a satellite (or remote) repository?
 		#The master repo will store the repository links
 		#The metadata structure of the satellite repository will be unchanged
-		master => 1, 		
+		master => 0, 		
 
 		#Once this config file file is loaded on the master repository
 		#You will need to update the database structure.. (or can I do that?)
@@ -50,15 +48,15 @@ $c->{repo_link} = {
 		lookup_script => "/users/lookup/repo_link",
 
 		#The config for the satellite repositories (see below)
-		remote_repos => $remote_repos,
+		remote_repos => [],
 
 };
 
-$remote_repos = [	
+$c->{repo_link}->{remote_repos} = [	
 	{
 		repo_uri => 'daves.repository.ac.uk',
 		#repo_port => 8080,
-		search_script => "/cgi/lookup/title_search"
+		search_script => "/cgi/lookup/title_search",
 	},
 ];
 =comment
