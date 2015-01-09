@@ -63,7 +63,7 @@ else
 
 for my $remote_repo (@{$rl_conf->{remote_repos}}){
 
-	my $remote_request_string = $remote_repo->{repo_uri}
+	my $remote_request_string = $remote_repo->{repo_uri};
 	$remote_request_string .= ":".$remote_repo->{repo_port} if(defined $remote_repo->{repo_port} && $remote_repo->{repo_port}=~ /\d+/)
 	$remote_request_string .= $remote_repo->{search_script}."?q=$q";
 
