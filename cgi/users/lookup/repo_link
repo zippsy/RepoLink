@@ -64,10 +64,10 @@ else
 for my $remote_repo (@{$rl_conf->{remote_repos}}){
 
 	my $remote_request_string = $remote_repo->{repo_uri};
-	$remote_request_string .= ":".$remote_repo->{repo_port} if(defined $remote_repo->{repo_port} && $remote_repo->{repo_port}=~ /\d+/)
+	$remote_request_string .= ":".$remote_repo->{repo_port} if(defined $remote_repo->{repo_port} && $remote_repo->{repo_port}=~ /\d+/);
 	$remote_request_string .= $remote_repo->{search_script}."?q=$q";
 
-	print STDERR $remote_request_string."\n";
+	#print STDERR $remote_request_string."\n";
 	if($remote_request_string !~ /^http:\/\//){
 		$remote_request_string = "http://".$remote_request_string;
 	}
