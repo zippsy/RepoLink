@@ -25,6 +25,7 @@
 # multiple satellite repositories
 
 	
+
 $c->{repo_link} = {
 		#Is this master (or local) repository or a satellite (or remote) repository?
 		#The master repo will store the repository links
@@ -38,10 +39,9 @@ $c->{repo_link} = {
 		min_chars => 5,
 		
 		#The hostname that will be used to contact master from satellite 
-		master_repo_host => 'my.repository.ac.uk',
+		master_repo_host => 'my.repo.ac.uk',
 		#The port that will be used to contact the master from satellite
 		#master_repo_port => 8081,
-		
 		#The auto-complete script used to contact the satellite repositories from the workflow
 		#NB This and the workflow paste below could be potentially replaced by a direct ajax 
 		#call to a cross-domain enabled search_script on the satellite(s)
@@ -54,9 +54,9 @@ $c->{repo_link} = {
 
 $c->{repo_link}->{remote_repos} = [	
 	{
-		repo_uri => 'daves.repository.ac.uk',
+		repo_uri => 'myother.repo.ac.uk',
 		#repo_port => 8080,
-		search_script => "/cgi/lookup/title_search",
+		search_script => "/cgi/lookup/title_search"
 	},
 ];
 =comment
@@ -73,16 +73,25 @@ $c->{repo_link}->{remote_repos} = [
 <div class="repo_links"></div>
 
 ###### Do this in the location you want the reciprocal links to the master repository to appear
+
+###### In BOTH/ALL repositories - Add the following to relevant template/default.xml above <epc:pin ref="head"/>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">// <!-- No script --></script>
+
+or for local jquery:
+
+<script src="/javascript/jquery.min.js">// <!-- No script --></script>
+
+
 ###################################################################################################
 =cut
 
-# Different calues required to get jquery inserted before auto.js depending on whether it is 
-# workflow (master) or summary_page (satellite)
-
-my $jquery_priority = 20;
+## Not used, see below
+#my $jquery_priority = 1000;
 
 if($c->{repo_link}->{master}){
-	$jquery_priority = 2000;
+
+#	$jquery_priority = 2000;
 
 	# Add the repo_link compound field to master
 	$c->add_dataset_field(
@@ -111,9 +120,17 @@ if($c->{repo_link}->{master}){
 	# Add search field to master 
 	# (required to make the export of the repo_link_link search work... unless there is a less intrusive way)
 	push @{$c->{search}->{advanced}->{search_fields}}, {meta_fields=>["repo_link_link"]};
+
 }
 
-#Insert jquery lib ahead of auto.js
+#EPrints seems to have issues with inserting things to the head in the right order so until that is sorted leave the below commented out
+
+#TODO : this doesn't work properly because 
+	#priority < 1000 inserts before for static, but not for workflow (good for static...except breaks workflow)
+	#priority > 1000 inserts before auto for workflow, but after for static (good for master.... except is breaks the summary_page)
+
+=comment
+#####Insert jquery lib ahead of auto.js
 
 $c->add_trigger( EP_TRIGGER_DYNAMIC_TEMPLATE, sub {
 	my %params = @_;
@@ -126,7 +143,9 @@ $c->add_trigger( EP_TRIGGER_DYNAMIC_TEMPLATE, sub {
 
 	# Top
 	$head->appendChild( $repo->xml->create_element( "script",
+#CDN
 #			src => "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js",
+#local
 			src => "/javascript/jquery.min.js", #local jquery
 		) );
 	$head->appendChild( $repo->xml->create_text_node( "\n    " ) );
@@ -148,3 +167,4 @@ $c->add_trigger( EP_TRIGGER_DYNAMIC_TEMPLATE, sub {
 	return;
 }, priority => $jquery_priority);
 
+=cut
