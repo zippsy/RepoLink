@@ -58,8 +58,13 @@ $export_req .= "http%253A%2F%2F".$repo->get_conf("host")."%2Fid%2Feprint%2F$id";
 $export_req .= "%7C-%7Ceprint_status%3Aeprint_status%3AANY%3AEQ%3Aarchive%7Cmetadata_visibility%3Ametadata_visibility%3AANY%3AEQ%3Ashow";
 
 #print STDERR $export_req."\n";
-if($export_req !~ /^http:\/\//){
-        $export_req = "http://".$export_req;
+
+# AH 21/09/2016: Check to see if the $export_req contains http or https 
+# If yes, return $export_req otherwise, return $export_req with http prefix
+if($export_req =~ /^https:\/\// || $export_req =~ /^http:\/\//) {
+	$export_req = $export_req;
+} else {
+	$export_req = "http://".$export_req;
 }
 
 my $ua = LWP::UserAgent->new;
@@ -83,4 +88,3 @@ if($jsonp){
         $res_str .= ");\n";
 }
 print $res_str;
-
