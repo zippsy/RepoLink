@@ -76,7 +76,7 @@ $c->{repo_link}->{remote_repos} = [
 
 ###### In BOTH/ALL repositories - Add the following to relevant template/default.xml above <epc:pin ref="head"/>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">// <!-- No script --></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">// <!-- No script --></script>
 
 or for local jquery:
 
